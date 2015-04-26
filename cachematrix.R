@@ -1,8 +1,8 @@
 ## These functions take advantage of the R scoping
 ## rules to minimize costly computations
 
-## This function, makeCacheMatrix creates a matrix 
-## and caches its inverse once computed.
+## This function creates a matrix and caches its inverse
+## once computed.
 
 makeCacheMatrix <- function(x = matrix()) 
 {
@@ -14,9 +14,9 @@ makeCacheMatrix <- function(x = matrix())
   get <- function() x
   setimatrix <- function(solve) InvMatrix <<- solve
   getimatrix <- function() InvMatrix
-  data.frame(set = set, get = get,
-             setimatrix = setimatrix,
-             getimatrix = getimatrix)
+  list(set = set, get = get,
+       setimatrix = setimatrix,
+       getimatrix = getimatrix)
 }
 
 ## This function checks the previous function to determine
@@ -25,14 +25,14 @@ makeCacheMatrix <- function(x = matrix())
 
 cacheSolve <- function(x, ...) 
 {
-  InvMatrix <- x[,getimatrix()]
+  InvMatrix <- x$getimatrix()
   if(!is.null(InvMatrix)) {
     message("getting cached data")
     return(InvMatrix)
   }
-  data <-  x[,getimatrix()]
+  data <-  x$get()
   InvMatrix <- solve(data, ...)
-  x[,setimatrix](InvMatrix)
+  x$setimatrix(InvMatrix)
   ## Return a matrix that is the inverse of 'x'
   InvMatrix
 }
